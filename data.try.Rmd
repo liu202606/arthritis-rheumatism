@@ -1,0 +1,958 @@
+
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(writexl)
+
+didian <- read_xlsx("地点_总.xlsx")
+
+load(file ='1-cs_long.RData')
+
+NDVI <- read_xlsx("1-NDVI.xlsx") 
+RH <- read_xlsx("1-RH.xlsx") 
+SH <- read_xlsx("1-SH.xlsx") 
+VPD <- read_xlsx("1-VPD.xlsx") 
+ganzao <- read_xlsx("1-AI.xlsx") 
+jiangshui <- read_xlsx("1-PRCP.xlsx") 
+
+
+
+```
+
+
+
+```{r}
+
+didian <- didian |> 
+  select('communityID','city','FID','NAME','区站号') |> 
+  rename(station = `区站号`)
+```
+
+
+
+```{r 处理m1_m2}
+
+RH <- unique(RH) |> 
+  mutate(m1 = paste0(year, "_", station)) |> 
+  select('m1', 'RH')
+NDVI <- unique(NDVI) |> 
+  mutate(m1 = paste0(year, "_", station))|> 
+  select('m1', 'NDVI')
+SH <- unique(SH) |> 
+  mutate(m1 = paste0(year, "_", station))|> 
+  select('m1', 'SH')
+VPD <- unique(VPD) |> 
+  mutate(m1 = paste0(year, "_", station))|> 
+  select('m1', 'VPD')
+ganzao <- unique(ganzao) |> 
+  mutate(m1 = paste0(year, "_", station)) |> 
+  select('m1', 'AI')
+
+m1 <- full_join(NDVI, ganzao, by = 'm1')
+m1 <- full_join(m1, RH, by = 'm1')
+m1 <- full_join(m1, VPD, by = 'm1')
+m1 <- full_join(m1, SH, by = 'm1')
+
+
+
+jiangshui <- jiangshui |> 
+  mutate(m2 = paste0(year, "_", station)) |> 
+  select('m2', 'PRCP')
+
+cs2.5_2d_long <- cs2.5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays') |> 
+  rename(cs2.5_2d = csdays)
+cs2.5_3d_long <- cs2.5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs2.5_3d = csdays)
+cs2.5_4d_long <- cs2.5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs2.5_4d = csdays)
+
+cs5_2d_long <- cs5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs5_2d = csdays)
+cs5_3d_long <- cs5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs5_3d = csdays)
+cs5_4d_long <- cs5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs5_4d = csdays)
+
+cs7.5_2d_long <- cs7.5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs7.5_2d = csdays)
+cs7.5_3d_long <- cs7.5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs7.5_3d = csdays)
+cs7.5_4d_long <- cs7.5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs7.5_4d = csdays)
+
+cs10_2d_long <- cs10_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs10_2d = csdays)
+cs10_3d_long <- cs10_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs10_3d = csdays)
+cs10_4d_long <- cs10_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))|> 
+  select('m2', 'csdays')|> 
+  rename(cs10_4d = csdays)
+
+
+m2 <- left_join(jiangshui,cs2.5_2d_long, by = 'm2')
+
+m2 <- left_join(m2,cs2.5_3d_long, by = 'm2')
+m2 <- left_join(m2,cs2.5_4d_long, by = 'm2')
+m2 <- left_join(m2,cs5_2d_long, by = 'm2')
+m2 <- left_join(m2,cs5_3d_long, by = 'm2')
+m2 <- left_join(m2,cs5_4d_long, by = 'm2')
+m2 <- left_join(m2,cs7.5_2d_long, by = 'm2')
+m2 <- left_join(m2,cs7.5_3d_long, by = 'm2')
+m2 <- left_join(m2,cs7.5_4d_long, by = 'm2')
+m2 <- left_join(m2,cs10_2d_long, by = 'm2')
+m2 <- left_join(m2,cs10_3d_long, by = 'm2')
+m2 <- left_join(m2,cs10_4d_long, by = 'm2')
+
+
+m2 <- na.omit(m2)
+
+
+write_xlsx(m1, "2-m1.xlsx")
+write_xlsx(m2, "2-m2.xlsx")
+
+```
+
+
+```{r 处理disease}
+
+data2011 <- read_xlsx("0-data2011.xlsx")
+
+disease2013 <- read_xlsx("0-disease2013.xlsx")
+disease2015 <- read_xlsx("0-disease2015.xlsx")
+disease2018 <- read_xlsx("0-disease2018.xlsx")
+disease2020 <- read_xlsx("0-disease2020.xlsx")
+
+
+
+```
+
+
+```{r 处理data2011}
+
+dim(data2011)
+# 17714    20
+
+disease2011 <- data2011 |> 
+  select('ID','disease','disyear')
+```
+
+
+```{r }
+data2011 <- data2011[,-c(7,16,19,20)]
+
+data2011 <- na.omit(data2011)
+dim(data2011)
+# 11105  16
+
+write_xlsx(data2011, "2-data2011.xlsx")
+```
+
+
+
+```{r}
+disease2011 <- left_join(data2011, disease2011, by = 'ID')
+
+nodisease2011 <- disease2011[which(disease2011$disease == 0), ]
+#7211
+
+disease2011 <- disease2011[which(disease2011$disease == 1), ]
+
+
+disease2011 <- disease2011[which(disease2011$disyear == 2011), ]
+#141
+
+
+nodisease2011$disyear <- NA
+
+data <- rbind(disease2011, nodisease2011)
+
+
+data <- data  |> 
+  mutate(ID = sub("(.)(.)$", "\\10\\2", ID)) |> 
+  select('ID',everything())
+
+dim(data)
+# 7352   18
+
+
+write_xlsx(data, "2-disease2011.xlsx")
+
+data11 <- data
+```
+
+
+
+```{r disease2013}
+
+# 手动挪年份写到年龄的
+# 手动补上写了年份但忘写1的
+
+disease2013 <- read_xlsx("0-disease2013.xlsx")
+
+
+disease2013 <- left_join(data, disease2013,by = 'ID')
+
+
+disease2013$disage13 <- 2011-disease2013$age+disease2013$disage13
+
+disease2013$disage13 <- replace(disease2013$disage13, is.na(disease2013$disage13), 0)
+disease2013$disyear13 <- replace(disease2013$disyear13, is.na(disease2013$disyear13), 0)
+
+
+
+disease2013$disyear13 <- ifelse(disease2013$disyear13 > 0, disease2013$disyear13, 
+                       ifelse(disease2013$disage13 > 0, disease2013$disage13, NA))
+
+disease2013 <- disease2013[,-21]
+#write_xlsx(disease2013, "2-disease2013.xlsx")
+
+
+
+disease11 <- disease2013[which(disease2013$disease == 1), ]
+disease11 <- disease11[,-19:-20]
+
+nodisease2013 <- disease2013[which(disease2013$disease == 0), ]
+
+nodisease2013_1 <- nodisease2013[which(nodisease2013$disease13 == 1), ]
+
+
+nodisease2013_1 <- nodisease2013_1[which(nodisease2013_1$disyear13 > 2010), ]
+nodisease2013_1 <- nodisease2013_1[,-17:-18] |> 
+  rename(disease = disease13,
+         disyear = disyear13)
+
+nodisease2013$disease13 <- replace(nodisease2013$disease13, 
+                                 is.na(nodisease2013$disease13), 2)
+
+
+nodisease2013_0 <- nodisease2013[which(nodisease2013$disease13 == 2), ]
+
+nodisease2013_0 <- nodisease2013_0[,-17:-18] |> 
+  rename(disease = disease13,
+         disyear = disyear13)
+
+nodisease2013_0$disyear <- NA
+disease2013 <- rbind(nodisease2013_1, nodisease2013_0)
+
+data13 <- rbind(disease11, disease2013)
+data13$disease <- -(data13$disease-2)
+
+write_xlsx(data13, "2-disease2013.xlsx")
+
+
+table(data13$disease)
+```
+
+
+
+
+
+```{r disease2015}
+
+
+# 手动挪年份写到年龄的
+# 手动补上写了年份但忘写1的
+
+disease2015 <- read_xlsx("0-disease2015.xlsx")
+
+
+disease2015 <- left_join(data13, disease2015,by = 'ID')
+
+
+disease2015$disage15 <- 2011-disease2015$age+disease2015$disage15
+
+disease2015$disage15 <- replace(disease2015$disage15, is.na(disease2015$disage15), 0)
+disease2015$disyear15 <- replace(disease2015$disyear15, is.na(disease2015$disyear15), 0)
+
+
+
+disease2015$disyear15 <- ifelse(disease2015$disyear15 > 0, disease2015$disyear15, 
+                       ifelse(disease2015$disage15 > 0, disease2015$disage15, NA))
+
+disease2015 <- disease2015[,-21]
+#write_xlsx(disease2015, "2-disease2015.xlsx")
+
+
+
+disease13 <- disease2015[which(disease2015$disease == 1), ]
+disease13 <- disease13[,-19:-20]
+
+nodisease2015 <- disease2015[which(disease2015$disease == 0), ]
+
+nodisease2015_1 <- nodisease2015[which(nodisease2015$disease15 == 1), ]
+
+
+nodisease2015_1 <- nodisease2015_1[which(nodisease2015_1$disyear15 > 2012), ]
+nodisease2015_1 <- nodisease2015_1[,-17:-18] |> 
+  rename(disease = disease15,
+         disyear = disyear15)
+
+nodisease2015_1$disyear <- gsub(2016, 2015, nodisease2015_1$disyear)
+
+
+nodisease2015$disease15 <- replace(nodisease2015$disease15, 
+                                 is.na(nodisease2015$disease15), 2)
+
+
+nodisease2015_0 <- nodisease2015[which(nodisease2015$disease15 == 2), ]
+
+nodisease2015_0 <- nodisease2015_0[,-17:-18] |> 
+  rename(disease = disease15,
+         disyear = disyear15)
+
+nodisease2015_0$disyear <- NA
+disease2015 <- rbind(nodisease2015_1, nodisease2015_0)
+
+data15 <- rbind(disease13, disease2015)
+data15$disease <- -(data15$disease-2)
+
+write_xlsx(data15, "2-disease2015.xlsx")
+
+
+table(data15$disease)
+
+#   0    1 
+# 6020  688 
+
+
+dim(data15)
+
+# 6708   18
+ 
+```
+
+
+```{r disease2018}
+
+
+# 手动挪年份写到年龄的
+# 手动补上写了年份但忘写1的
+
+disease2018 <- read_xlsx("0-disease2018.xlsx")
+
+
+disease2018 <- left_join(data15, disease2018,by = 'ID')
+
+
+disease2018$disage18 <- 2011-disease2018$age+disease2018$disage18
+
+disease2018$disage18 <- replace(disease2018$disage18, is.na(disease2018$disage18), 0)
+disease2018$disyear18 <- replace(disease2018$disyear18, is.na(disease2018$disyear18), 0)
+
+
+
+disease2018$disyear18 <- ifelse(disease2018$disyear18 > 0, disease2018$disyear18, 
+                       ifelse(disease2018$disage18 > 0, disease2018$disage18, NA))
+
+disease2018 <- disease2018[,-21]
+#write_xlsx(disease2018, "2-disease2018.xlsx")
+
+
+
+disease15 <- disease2018[which(disease2018$disease == 1), ]
+disease15 <- disease15[,-19:-20]
+
+nodisease2018 <- disease2018[which(disease2018$disease == 0), ]
+
+nodisease2018_1 <- nodisease2018[which(nodisease2018$disease18 == 1), ]
+
+
+nodisease2018_1 <- nodisease2018_1[which(nodisease2018_1$disyear18 > 2014), ]
+nodisease2018_1 <- nodisease2018_1[,-17:-18] |> 
+  rename(disease = disease18,
+         disyear = disyear18)
+
+
+
+nodisease2018$disease18 <- replace(nodisease2018$disease18, 
+                                 is.na(nodisease2018$disease18), 2)
+
+
+nodisease2018_0 <- nodisease2018[which(nodisease2018$disease18 == 2), ]
+
+nodisease2018_0 <- nodisease2018_0[,-17:-18] |> 
+  rename(disease = disease18,
+         disyear = disyear18)
+
+nodisease2018_0$disyear <- NA
+disease2018 <- rbind(nodisease2018_1, nodisease2018_0)
+
+data18 <- rbind(disease15, disease2018)
+data18$disease <- -(data18$disease-2)
+
+write_xlsx(data18, "2-disease2018.xlsx")
+
+
+table(data18$disease)
+
+#   0    1 
+# 5610  891 
+
+
+dim(data18)
+
+# 6501   18
+ 
+```
+
+
+```{r alldata} 
+
+alldata <- data18
+alldata$disyear <- replace(alldata$disyear, 
+                                 is.na(alldata$disyear), 2018)
+
+
+alldata <- left_join(alldata, didian,by = 'communityID')
+
+alldata <- alldata[,-19:-20]
+write_xlsx(alldata, "3-data.xlsx")
+
+```
+
+
+```{r lag0}
+
+data_lag0 <- alldata |> 
+  mutate(m1 = paste0(disyear, '_', NAME),
+         m2 = paste0(disyear, '_', station))
+
+data_lag0 <- left_join(data_lag0, m1, by = 'm1')
+data_lag0 <- left_join(data_lag0, m2, by = 'm2')
+
+data_lag0 <- data_lag0[,-18:-22] |> 
+  select('ID','communityID','disease',everything())
+
+write_xlsx(data_lag0, "3-data_lag0.xlsx")
+```
+
+
+```{r lag1}
+
+data_lag1 <- alldata |> 
+  mutate(year = as.numeric(alldata$disyear)-1,
+         m1 = paste0(year, '_', NAME),
+         m2 = paste0(year, '_', station))
+
+data_lag1 <- left_join(data_lag1, m1, by = 'm1')
+data_lag1 <- left_join(data_lag1, m2, by = 'm2')
+
+data_lag1 <- data_lag1[,-18:-23] |> 
+  select('ID','communityID','disease',everything())
+
+write_xlsx(data_lag1, "3-data_lag1.xlsx")
+```
+
+
+```{r lag2}
+
+data_lag2 <- alldata |> 
+  mutate(year = as.numeric(alldata$disyear)-2,
+         m1 = paste0(year, '_', NAME),
+         m2 = paste0(year, '_', station))
+
+data_lag2 <- left_join(data_lag2, m1, by = 'm1')
+data_lag2 <- left_join(data_lag2, m2, by = 'm2')
+
+data_lag2 <- data_lag2[,-18:-23] |> 
+  select('ID','communityID','disease',everything())
+
+write_xlsx(data_lag2, "3-data_lag2.xlsx")
+```
+
+
+
+```{r lag3}
+
+data_lag3 <- alldata |> 
+  mutate(year = as.numeric(alldata$disyear)-3,
+         m1 = paste0(year, '_', NAME),
+         m2 = paste0(year, '_', station))
+
+data_lag3 <- left_join(data_lag3, m1, by = 'm1')
+data_lag3 <- left_join(data_lag3, m2, by = 'm2')
+
+data_lag3 <- data_lag3[,-18:-23] |> 
+  select('ID','communityID','disease',everything())
+
+write_xlsx(data_lag3, "3-data_lag3.xlsx")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(tableone)
+cliOut <- CreateTableOne(data = alldata[,3:18], strata = c("disease"))
+cliOut <- print(cliOut, showAllLevels = TRUE)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+VPD <- read_xlsx("干燥度2017.xlsx") 
+
+VPD <- VPD |> 
+  mutate(VPD = rowSums(VPD[3:ncol(VPD)])/12) |> 
+  select('NAME','VPD')
+
+try <- didian |> 
+  select('city','NAME','communityID')
+try <- unique(try)
+
+try <- right_join(try,VPD,by = 'NAME')
+
+try <- left_join(demo, try, by = 'communityID')
+try$VPD <- try$MEAN
+
+try$VPD <- as.factor(try$VPD)
+glm <- glm(disease ~ VPD, data = try)
+summary(glm)
+round(exp(coef(glm)),3)
+round(summary(glm)$coefficients[,4],3)
+```
+
+```{r}
+ludian <- read.csv("露点温度2017.csv")
+
+ludian$station <- as.numeric(ludian$station)
+data <- left_join(demo, didian, by = 'communityID')
+
+data <- left_join(data, ludian, by = 'station')
+
+str(data)
+data$try <- data$try/365
+
+
+try <- na.omit(data)
+#try$try <- scale(try$try)
+
+glm <- glm(disease ~ relevel(data$try, ref = "4"), data = try)
+summary(glm)
+round(exp(coef(glm)),3)
+round(summary(glm)$coefficients[,4],3)
+
+round(exp(coef(glm)-1.96*summary(glm)$coefficients[,2]),3)
+round(exp(coef(glm)+1.96*summary(glm)$coefficients[,2]),3)
+
+
+```
+
+
+```{r}
+
+demo <- read_xlsx("6-artdata.xlsx") 
+
+demo$year <- demo$year-1
+
+data <- left_join(demo, didian, by = 'communityID')
+data$year <- data$year-3
+
+data <- data |> 
+  mutate(m2 = paste0(year, "_", station))
+
+RH <- RH |> 
+  mutate(m2 = paste0(year, "_", station))
+
+data <- left_join(data,RH, by = 'm2')
+
+try <- data
+
+# quantile(data$NDVI, probs = c(0,0.5,1),na.rm = TRUE)
+# 
+# try$NDVI <- cut(data$NDVI,breaks=c(-Inf,0.688227 ,Inf),
+# 		labels = c("1","2"))
+
+
+#try$NDVI <- as.factor(round(data$NDVI,1)*10)
+
+#try$NDVI <- relevel(try$NDVI, levels = c( "8",'7','6','5','4','3','2','1'), ref = "2")
+
+try$NDVI <- cut(data$NDVI,breaks=c(-Inf,0.4,Inf),
+ 		labels = c("1","2"))
+try$NDVI <- relevel(try$NDVI, ref = "2")
+
+#median(data$NDVI,na.rm = TRUE)
+
+glm <- glm(disease ~ NDVI, data = try)
+
+round(exp(coef(glm)),3)
+round(summary(glm)$coefficients[,4],3)
+```
+
+```{r}
+try <- data |> 
+  dplyr::select('disease','NDVI') |> 
+  na.omit()
+try$NDVI <- as.factor(round(try$NDVI,1)*10)
+
+try$disease <- as.numeric(try$disease)
+try1 <- try[which(try$disease>0),] |> 
+  na.omit()
+
+try1 <- aggregate(try1$disease, list(try1$NDVI), sum)
+
+plot(try1)
+
+try2 <- try[which(try$disease<1),]
+try2$disease <- try2$disease+1
+try2 <- aggregate(try2$disease, list(try2$NDVI), sum)
+
+plot(try2)
+```
+
+
+
+```{r}
+cs2.5_2d_long <- cs2.5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs2.5_3d_long <- cs2.5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs2.5_4d_long <- cs2.5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs5_2d_long <- cs5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs5_3d_long <- cs5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs5_4d_long <- cs5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs7.5_2d_long <- cs7.5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs7.5_3d_long <- cs7.5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs7.5_4d_long <- cs7.5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs10_2d_long <- cs10_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+
+cs10_3d_long <- cs10_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+cs10_4d_long <- cs10_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+
+
+
+try <- left_join(data,cs2.5_2d_long, by = 'm2')
+try <- left_join(try,cs2.5_3d_long, by = 'm2')
+try <- left_join(try,cs2.5_4d_long, by = 'm2')
+try <- left_join(try,cs5_2d_long, by = 'm2')
+try <- left_join(try,cs5_3d_long, by = 'm2')
+try <- left_join(try,cs5_4d_long, by = 'm2')
+try <- left_join(try,cs7.5_2d_long, by = 'm2')
+try <- left_join(try,cs7.5_3d_long, by = 'm2')
+try <- left_join(try,cs7.5_4d_long, by = 'm2')
+try <- left_join(try,cs10_2d_long, by = 'm2')
+try <- left_join(try,cs10_3d_long, by = 'm2')
+try <- left_join(try,cs10_4d_long, by = 'm2')
+
+colnames(try)
+try <- try[,-10:-11]
+try <- try[,c(1:5,12,15,18,21,24,27,30,33,36,39,42,45)]
+colnames(try) <- c('ID','communityID','age','gender','disease',
+                   #'VPD',
+                   'cs2.5_2d','cs2.5_3d','cs2.5_4d',
+                   'cs5_2d','cs5_3d','cs5_4d',
+                   'cs7.5_2d','cs7.5_3d','cs7.5_4d',
+                   'cs10_2d','cs10_3d','cs10_4d')
+
+
+
+data <- try |> 
+  select('ID','communityID','disease',everything())
+
+#write.csv(data,"data-3.csv",row.names = F)
+
+data$disease2 <- -(data$disease-2)
+```
+
+
+
+```{r}
+
+
+Uni_glm_model<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm1<-glm(FML,data=data,family = binomial)
+  glm2<-summary(glm1)
+  OR<-round(exp(coef(glm1)),3)
+  SE<-glm2$coefficients[,2]
+  CI5<-round(exp(coef(glm1)-1.96*SE),3)
+  CI95<-round(exp(coef(glm1)+1.96*SE),3)
+  CI<-paste0(CI5,'-',CI95)
+  P<-round(glm2$coefficients[,4],3)
+  Uni_glm_model <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'CI' = CI,
+                              'P' = P)[-1,]
+  return(Uni_glm_model)
+}  
+
+
+variable.names<- colnames(data)[c(5:ncol(data)-1)]
+variable.names 
+
+Uni_glm <- lapply(variable.names, Uni_glm_model)
+
+library(plyr)
+Uni_glm<- ldply(Uni_glm,data.frame)
+Uni_glm
+
+#write.csv(Uni_glm,"2-uni.glm.csv",row.names = F)
+```
+
+
+
+```{r}
+
+fit <- glm(disease2 ~ VPD + cs5_4d + VPD:cs5_4d, 
+           family = binomial(link = "logit"), data = data)
+summary(fit)$coefficients
+coef <- summary(fit)$coefficients[,1]
+se <- summary(fit)$coefficients[,2]
+Results <- cbind(exp(coef),exp(coef-1.96*se),exp(coef+1.96*se))
+exp(confint(fit)) 
+P <- summary(fit)$coefficients[4,4]
+dimnames(Results)[[2]] <- c("OR", "lower","upper")
+Results
+
+```
+
+
+```{r}
+library(epiR) 
+dat.glm01 <- glm(disease ~ VPD + cs7.5_3d + VPD:cs7.5_3d, family = binomial, data = data)
+summary(dat.glm01) 
+
+## RERI
+try <- epi.interaction(model = dat.glm01, param = "product", 
+                coef = c(2,3,4), #type = "reri", 
+                conf.level = 0.95)
+View(try)
+
+```
+
+
+```{r}
+library(interactionR)
+library(survival)
+library(survminer)
+
+
+fit1<-glm(disease2~VPD*cs2.5_2d,data=data)
+summary(fit1)
+
+out<- interactionR(fit1,
+                   exposure_names =c("VPD", "cs10_2d"),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = T, recode = F)
+
+interactionR_table(out)
+
+round(exp(coef(fit1)),3)
+round(summary(fit1)$coefficients[,4],3)
+```
+
+
+```{r}
+library(readxl)
+library(tidyverse)
+
+load(file ='hw_all.RData')
+
+```
+
+
+```{r}
+
+demo <- read_xlsx("6-artdata.xlsx") 
+
+demo$year <- demo$year-1
+data <- left_join(demo, didian, by = 'communityID')
+
+data <- data |> 
+  mutate(m1 = paste0(year, "_", FID),
+         m2 = paste0(year, "_", station))
+
+NDVI <- unique(NDVI)
+NDVI <- NDVI |> 
+  mutate(m1 = paste0(year, "_", FID))
+
+data <- left_join(data,NDVI, by = 'm1')
+```
+
+
+
+```{r}
+hw90_2d_long <- hw90_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw90_3d_long <- hw90_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw90_4d_long <- hw90_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw92.5_2d_long <- hw92.5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw92.5_3d_long <- hw92.5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw92.5_4d_long <- hw92.5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw95_2d_long <- hw95_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw95_3d_long <- hw95_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw95_4d_long <- hw95_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw97.5_2d_long <- hw97.5_2d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+
+hw97.5_3d_long <- hw97.5_3d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+hw97.5_4d_long <- hw97.5_4d_long |> 
+  mutate(m2 = paste0(year, "_", station))
+
+
+
+
+try <- left_join(data,hw90_2d_long, by = 'm2')
+try <- left_join(try,hw90_3d_long, by = 'm2')
+try <- left_join(try,hw90_4d_long, by = 'm2')
+try <- left_join(try,hw92.5_2d_long, by = 'm2')
+try <- left_join(try,hw92.5_3d_long, by = 'm2')
+try <- left_join(try,hw92.5_4d_long, by = 'm2')
+try <- left_join(try,hw95_2d_long, by = 'm2')
+try <- left_join(try,hw95_3d_long, by = 'm2')
+try <- left_join(try,hw95_4d_long, by = 'm2')
+try <- left_join(try,hw97.5_2d_long, by = 'm2')
+try <- left_join(try,hw97.5_3d_long, by = 'm2')
+try <- left_join(try,hw97.5_4d_long, by = 'm2')
+
+
+colnames(try)
+try <- try[,c(1:5,15,18,21,24,27,30,33,36,39,42,45,48)]
+colnames(try) <- c('ID','communityID','age','gender','disease',
+                   #'NDVI',
+                   'hw90_2d','hw90_3d','hw90_4d',
+                   'hw92.5_2d','hw92.5_3d','hw92.5_4d',
+                   'hw95_2d','hw95_3d','hw95_4d',
+                   'hw97.5_2d','hw97.5_3d','hw97.5_4d')
+
+
+
+data <- try |> 
+  select('ID','communityID','disease',everything())
+
+#write.csv(data,"data-3.csv",row.names = F)
+
+```
+
+
+
+```{r}
+
+
+Uni_glm_model<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm1<-glm(FML,data=data,family = binomial)
+  glm2<-summary(glm1)
+  OR<-round(exp(coef(glm1)),3)
+  SE<-glm2$coefficients[,2]
+  CI5<-round(exp(coef(glm1)-1.96*SE),3)
+  CI95<-round(exp(coef(glm1)+1.96*SE),3)
+  CI<-paste0(CI5,'-',CI95)
+  P<-round(glm2$coefficients[,4],3)
+  Uni_glm_model <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'CI' = CI,
+                              'P' = P)[-1,]
+  return(Uni_glm_model)
+}  
+
+
+variable.names<- colnames(data)[c(4:ncol(data))]
+variable.names 
+
+Uni_glm <- lapply(variable.names, Uni_glm_model)
+
+library(plyr)
+Uni_glm<- ldply(Uni_glm,data.frame)
+Uni_glm
+
+#write.csv(Uni_glm,"2-uni.glm.csv",row.names = F)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

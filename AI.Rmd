@@ -1,0 +1,54 @@
+
+
+
+
+```{r}
+
+library(readxl)
+library(tidyverse)
+
+data <- read_xlsx("干燥度.xlsx", sheet = 1)
+
+data <- data[,-1]
+
+didian <- read_xlsx("地点_总.xlsx") |> 
+  select('FID','NAME')
+
+
+data2 <- inner_join(data,didian,by = 'NAME')
+
+
+AI <- pivot_longer(data2,
+                     cols = -c('NAME','FID'),       # 除year外均转换
+                     names_to = "year",
+                     values_to = "AI")
+
+AI <- AI |> 
+  select('FID','NAME','year','AI') |> 
+  rename(station = NAME)
+
+writexl::write_xlsx(AI, "1-AI.xlsx")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

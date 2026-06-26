@@ -1,0 +1,623 @@
+
+
+```{r 降水}
+
+library(readxl)
+didian <- read_xlsx("地点_总.xlsx")
+
+list <- unique(didian$区站号)
+
+list <- paste0(list,"099999")
+
+library(tidyverse)
+library(writexl)
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2008/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2008_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2008/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2008_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2008 <- merge.data
+jiangshui2008[, 2:ncol(jiangshui2008)] <- apply(jiangshui2008[, 2:ncol(jiangshui2008)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2008[, 2:ncol(jiangshui2008)] <- apply(jiangshui2008[, 2:ncol(jiangshui2008)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2008 <- colSums(jiangshui2008[, 2:ncol(jiangshui2008)],na.rm = TRUE)
+jiangshui2008 <- as.data.frame(jiangshui2008)
+try <- substr(rownames(jiangshui2008),6,10)
+jiangshui2008 <- jiangshui2008 |> 
+  mutate(year = 2008,
+         station = try) |> 
+  rename(PRCP = jiangshui2008) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2008, "降水量2008.xlsx")
+```
+
+
+```{r }
+
+merge.data <- read.csv(paste0('2009/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2009_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2009/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2009_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2009 <- merge.data
+jiangshui2009[, 2:ncol(jiangshui2009)] <- apply(jiangshui2009[, 2:ncol(jiangshui2009)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2009[, 2:ncol(jiangshui2009)] <- apply(jiangshui2009[, 2:ncol(jiangshui2009)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2009 <- colSums(jiangshui2009[, 2:ncol(jiangshui2009)],na.rm = TRUE)
+jiangshui2009 <- as.data.frame(jiangshui2009)
+try <- substr(rownames(jiangshui2009),6,10)
+jiangshui2009 <- jiangshui2009 |> 
+  mutate(year = 2009,
+         station = try) |> 
+  rename(PRCP = jiangshui2009) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2009, "降水量2009.xlsx")
+```
+
+
+
+```{r }
+
+merge.data <- read.csv(paste0('2010/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2010_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2010/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2010_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2010 <- merge.data
+jiangshui2010[, 2:ncol(jiangshui2010)] <- apply(jiangshui2010[, 2:ncol(jiangshui2010)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2010[, 2:ncol(jiangshui2010)] <- apply(jiangshui2010[, 2:ncol(jiangshui2010)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2010 <- colSums(jiangshui2010[, 2:ncol(jiangshui2010)],na.rm = TRUE)
+jiangshui2010 <- as.data.frame(jiangshui2010)
+try <- substr(rownames(jiangshui2010),6,10)
+jiangshui2010 <- jiangshui2010 |> 
+  mutate(year = 2010,
+         station = try) |> 
+  rename(PRCP = jiangshui2010) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2010, "降水量2010.xlsx")
+```
+
+
+
+```{r }
+
+merge.data <- read.csv(paste0('2011/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2011_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2011/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2011_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2011 <- merge.data
+jiangshui2011[, 2:ncol(jiangshui2011)] <- apply(jiangshui2011[, 2:ncol(jiangshui2011)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2011[, 2:ncol(jiangshui2011)] <- apply(jiangshui2011[, 2:ncol(jiangshui2011)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2011 <- colSums(jiangshui2011[, 2:ncol(jiangshui2011)],na.rm = TRUE)
+jiangshui2011 <- as.data.frame(jiangshui2011)
+try <- substr(rownames(jiangshui2011),6,10)
+jiangshui2011 <- jiangshui2011 |> 
+  mutate(year = 2011,
+         station = try) |> 
+  rename(PRCP = jiangshui2011) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2011, "降水量2011.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2012/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2012_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2012/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2012_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2012 <- merge.data
+jiangshui2012[, 2:ncol(jiangshui2012)] <- apply(jiangshui2012[, 2:ncol(jiangshui2012)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2012[, 2:ncol(jiangshui2012)] <- apply(jiangshui2012[, 2:ncol(jiangshui2012)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2012 <- colSums(jiangshui2012[, 2:ncol(jiangshui2012)],na.rm = TRUE)
+jiangshui2012 <- as.data.frame(jiangshui2012)
+try <- substr(rownames(jiangshui2012),6,10)
+jiangshui2012 <- jiangshui2012 |> 
+  mutate(year = 2012,
+         station = try) |> 
+  rename(PRCP = jiangshui2012) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2012, "降水量2012.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2013/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2013_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2013/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2013_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2013 <- merge.data
+jiangshui2013[, 2:ncol(jiangshui2013)] <- apply(jiangshui2013[, 2:ncol(jiangshui2013)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2013[, 2:ncol(jiangshui2013)] <- apply(jiangshui2013[, 2:ncol(jiangshui2013)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2013 <- colSums(jiangshui2013[, 2:ncol(jiangshui2013)],na.rm = TRUE)
+jiangshui2013 <- as.data.frame(jiangshui2013)
+try <- substr(rownames(jiangshui2013),6,10)
+jiangshui2013 <- jiangshui2013 |> 
+  mutate(year = 2013,
+         station = try) |> 
+  rename(PRCP = jiangshui2013) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2013, "降水量2013.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2014/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2014_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2014/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2014_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2014 <- merge.data
+jiangshui2014[, 2:ncol(jiangshui2014)] <- apply(jiangshui2014[, 2:ncol(jiangshui2014)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2014[, 2:ncol(jiangshui2014)] <- apply(jiangshui2014[, 2:ncol(jiangshui2014)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2014 <- colSums(jiangshui2014[, 2:ncol(jiangshui2014)],na.rm = TRUE)
+jiangshui2014 <- as.data.frame(jiangshui2014)
+try <- substr(rownames(jiangshui2014),6,10)
+jiangshui2014 <- jiangshui2014 |> 
+  mutate(year = 2014,
+         station = try) |> 
+  rename(PRCP = jiangshui2014) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2014, "降水量2014.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2015/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2015_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2015/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2015_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2015 <- merge.data
+jiangshui2015[, 2:ncol(jiangshui2015)] <- apply(jiangshui2015[, 2:ncol(jiangshui2015)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2015[, 2:ncol(jiangshui2015)] <- apply(jiangshui2015[, 2:ncol(jiangshui2015)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2015 <- colSums(jiangshui2015[, 2:ncol(jiangshui2015)],na.rm = TRUE)
+jiangshui2015 <- as.data.frame(jiangshui2015)
+try <- substr(rownames(jiangshui2015),6,10)
+jiangshui2015 <- jiangshui2015 |> 
+  mutate(year = 2015,
+         station = try) |> 
+  rename(PRCP = jiangshui2015) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2015, "降水量2015.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2016/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2016_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2016/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2016_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2016 <- merge.data
+jiangshui2016[, 2:ncol(jiangshui2016)] <- apply(jiangshui2016[, 2:ncol(jiangshui2016)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2016[, 2:ncol(jiangshui2016)] <- apply(jiangshui2016[, 2:ncol(jiangshui2016)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2016 <- colSums(jiangshui2016[, 2:ncol(jiangshui2016)],na.rm = TRUE)
+jiangshui2016 <- as.data.frame(jiangshui2016)
+try <- substr(rownames(jiangshui2016),6,10)
+jiangshui2016 <- jiangshui2016 |> 
+  mutate(year = 2016,
+         station = try) |> 
+  rename(PRCP = jiangshui2016) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2016, "降水量2016.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2017/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2017_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2017/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2017_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2017 <- merge.data
+jiangshui2017[, 2:ncol(jiangshui2017)] <- apply(jiangshui2017[, 2:ncol(jiangshui2017)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2017[, 2:ncol(jiangshui2017)] <- apply(jiangshui2017[, 2:ncol(jiangshui2017)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2017 <- colSums(jiangshui2017[, 2:ncol(jiangshui2017)],na.rm = TRUE)
+jiangshui2017 <- as.data.frame(jiangshui2017)
+try <- substr(rownames(jiangshui2017),6,10)
+jiangshui2017 <- jiangshui2017 |> 
+  mutate(year = 2017,
+         station = try) |> 
+  rename(PRCP = jiangshui2017) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2017, "降水量2017.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2018/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2018_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2018/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2018_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2018 <- merge.data
+jiangshui2018[, 2:ncol(jiangshui2018)] <- apply(jiangshui2018[, 2:ncol(jiangshui2018)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2018[, 2:ncol(jiangshui2018)] <- apply(jiangshui2018[, 2:ncol(jiangshui2018)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2018 <- colSums(jiangshui2018[, 2:ncol(jiangshui2018)],na.rm = TRUE)
+jiangshui2018 <- as.data.frame(jiangshui2018)
+try <- substr(rownames(jiangshui2018),6,10)
+jiangshui2018 <- jiangshui2018 |> 
+  mutate(year = 2018,
+         station = try) |> 
+  rename(PRCP = jiangshui2018) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2018, "降水量2018.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2019/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2019_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2019/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2019_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2019 <- merge.data
+jiangshui2019[, 2:ncol(jiangshui2019)] <- apply(jiangshui2019[, 2:ncol(jiangshui2019)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2019[, 2:ncol(jiangshui2019)] <- apply(jiangshui2019[, 2:ncol(jiangshui2019)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2019 <- colSums(jiangshui2019[, 2:ncol(jiangshui2019)],na.rm = TRUE)
+jiangshui2019 <- as.data.frame(jiangshui2019)
+try <- substr(rownames(jiangshui2019),6,10)
+jiangshui2019 <- jiangshui2019 |> 
+  mutate(year = 2019,
+         station = try) |> 
+  rename(PRCP = jiangshui2019) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2019, "降水量2019.xlsx")
+```
+
+```{r }
+
+merge.data <- read.csv(paste0('2020/',list[1],'.csv'))   |>
+     select('STATION',
+            'DATE',
+            'PRCP')
+station <- merge.data$STATION[1]
+colnames(merge.data) <- c('STATION',
+                           'DATE',
+                           paste0('2020_',station))
+merge.data <- merge.data[,-1]
+
+n <- length(list)
+
+for (i in 2:n){
+   path <- paste0('2020/',list[i],'.csv')
+   new.data <- read.csv(path) |> 
+     select('STATION','DATE','PRCP') 
+   station <- new.data$STATION[1]
+   colnames(new.data) <- c('STATION',
+                           'DATE',
+                           paste0('2020_',station))
+   new.data <- new.data[,-1]
+   merge.data <- full_join(merge.data,new.data,by = 'DATE')
+}
+
+jiangshui2020 <- merge.data
+jiangshui2020[, 2:ncol(jiangshui2020)] <- apply(jiangshui2020[, 2:ncol(jiangshui2020)],2,
+                                   function(x) gsub(99.99,NA,x))
+jiangshui2020[, 2:ncol(jiangshui2020)] <- apply(jiangshui2020[, 2:ncol(jiangshui2020)],2,
+                                   function(x) as.numeric(x))
+
+
+jiangshui2020 <- colSums(jiangshui2020[, 2:ncol(jiangshui2020)],na.rm = TRUE)
+jiangshui2020 <- as.data.frame(jiangshui2020)
+try <- substr(rownames(jiangshui2020),6,10)
+jiangshui2020 <- jiangshui2020 |> 
+  mutate(year = 2020,
+         station = try) |> 
+  rename(PRCP = jiangshui2020) |> 
+  select('year','station','PRCP')
+
+write_xlsx(jiangshui2020, "降水量2020.xlsx")
+```
+
+
+
+
+```{r}
+merge.data <- rbind(jiangshui2008, jiangshui2009, 
+                    jiangshui2010, jiangshui2011, 
+                    jiangshui2012, jiangshui2013, jiangshui2014, jiangshui2015, 
+                    jiangshui2016, jiangshui2017, jiangshui2018, jiangshui2019, 
+                    jiangshui2020)
+
+
+write_xlsx(merge.data, "降水量.xlsx")
+```
+
+
+# 与降水相同，在数据集里换成TEMP提取温度
+
+

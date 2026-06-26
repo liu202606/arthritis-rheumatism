@@ -1,0 +1,279 @@
+
+```{r}
+library(haven)
+library(tidyverse)
+library(car)
+library(writexl)
+```
+
+
+```{r 2011基线变量}
+
+demo <- read_dta('2011年全国基线调查/demographic_background.dta') |> 
+  mutate(age = 2011-ba002_1,
+         education = cut(bd001, breaks = c(-Inf,1.5,7.5,Inf),
+                         labels = c('no','secondary school','college or above')),
+         marital_status = cut(be001, breaks = c(-Inf, 2.5, 5.5, Inf),
+                            labels = c("married","separated/divorced/widowed","never"))
+         ) |> 
+  select('ID','communityID','age','rgender','education','marital_status') |> 
+  rename(gender = rgender
+         )
+
+demo$gender <- gsub(0,NA,demo$gender)
+
+
+household_roster <- read_dta('2011年全国基线调查/household_roster.dta') |> 
+  mutate(residence = cut(a001, breaks = c(-Inf,1.5,Inf),
+                         labels = c('rural','urban'))) |> 
+  select('ID','residence')
+
+data <- full_join(demo, household_roster, by = 'ID')
+
+
+
+
+pension <- read_dta('2011年全国基线调查/work_retirement_and_pension.dta') |> 
+  mutate(pension = cut(fn001, breaks = c(-Inf,1.5,Inf),
+                         labels = c('yes','no'))) |> 
+  select('ID','pension')
+
+data <- full_join(data,pension,by = 'ID')
+
+housing <- read_dta('2011年全国基线调查/housing_characteristics.dta') |> 
+  mutate(heating = factor(i021, levels = c(1,2,3,4,5,6,7),
+                      labels = c('clean','unclean','clean','clean',
+                                 'clean','unclean','other')),
+         cook_fuel = factor(i021, levels = c(1,2,3,4,5,6,7),
+                      labels = c('unclean','clean','unclean','clean',
+                                 'clean','unclean','other'))) |> 
+  select('householdID','heating','cook_fuel')
+
+
+data$householdID <- substr(data$ID, 1, 9)
+
+data <- left_join(data, housing, by = 'householdID')
+
+
+insurance <- read_dta('2011年全国基线调查/health_care_and_insurance.dta') |> 
+  select('ID','ea001s1','ea001s2','ea001s3','ea001s4','ea001s5','ea001s6',
+         'ea001s7','ea001s8','ea001s9','ea001s10') 
+
+
+insurance[, 2:(ncol(insurance)-1)] <- apply(insurance[, 2:(ncol(insurance)-1)],2,
+                                   function(x) replace(x, is.na(x), 0))
+
+insurance <- insurance |> 
+  mutate(ea001 = as.numeric(ea001s1)+as.numeric(ea001s2)+as.numeric(ea001s3)+
+           as.numeric(ea001s4)+as.numeric(ea001s5)+as.numeric(ea001s6)+
+           as.numeric(ea001s7)+as.numeric(ea001s8)+as.numeric(ea001s9))
+
+insurance$ea001[insurance$ea001 == 0 ] <- -999
+insurance$ea001s10[insurance$ea001s10 == 10 ] <- 0
+insurance$ea001s10 <- replace(insurance$ea001s10, is.na(insurance$ea001s10), -999)
+
+
+insurance$insurance <- ifelse(insurance$ea001>=1, 1, insurance$ea001s10)
+
+insurance <- insurance[,-2:-12]
+
+insurance$insurance[insurance$insurance == -999 ] <- NA
+
+insurance$insurance <- factor(insurance$insurance, 
+                              levels = c(1,0),
+                              labels = c('yes','no'))
+
+data <- full_join(data, insurance, by = 'ID')
+
+data <- data[,-9]
+```
+
+
+```{r 2011health变量}
+
+health <- read_dta('2011年全国基线调查/health_status_and_functioning.dta') |> 
+  mutate(self_comment_health = cut(da079, breaks = c(-Inf,2.5,3.5,Inf),
+                         labels = c('good','fair','poor')),
+         sleep = as.numeric(da049), nap = round(as.numeric(da050)/60, 2),
+         da051_1_ = -(da051_1_-2),
+         da051_2_ = -(da051_2_-2),
+         da051_3_ = -(da051_3_-2),
+         da051 = da051_1_ + da051_2_ + da051_3_,
+         physical_activity = ifelse(da051 > 0,'yes','no'),
+         smoke = cut(da059, breaks = c(-Inf,1.5,Inf),
+                         labels = c('yes','no')),
+         drink = cut(da067, breaks = c(-Inf,1.5,2.5,Inf),
+                         labels = c('more','less','no')),
+         disease = da007_13_,
+         year = as.numeric(da009_1_13_),
+         disage = da009_2_13_
+         ) |> 
+  select('ID','self_comment_health','sleep','nap','physical_activity',
+         'smoke','drink','disease','year','disage',
+         'da056s1', 'da056s2', 'da056s3', 'da056s4', 'da056s5', 'da056s6',
+         'da056s7', 'da056s8', 'da056s9', 'da056s10', 'da056s11', 'da056s12'
+         )
+
+
+health$disease[health$disease == 2 ] <- 0
+
+
+health[, 11:(ncol(health)-1)] <- apply(health[, 11:(ncol(health)-1)],2,
+                                   function(x) replace(x, is.na(x), 0))
+
+health <- health |> 
+  mutate(da056 = as.numeric(da056s1)+as.numeric(da056s2)+as.numeric(da056s3)+
+           as.numeric(da056s4)+as.numeric(da056s5)+as.numeric(da056s6)+
+           as.numeric(da056s7)+as.numeric(da056s8)+as.numeric(da056s9)+
+           +as.numeric(da056s10)+as.numeric(da056s11))
+
+
+health$da056[health$da056 == 0 ] <- -999
+health$da056s12[health$da056s12 == 12 ] <- 0
+health$da056s12 <- replace(health$da056s12, is.na(health$da056s12), -999)
+
+
+health$leisure_activitity <- ifelse(health$da056>=1, 1, health$da056s12)
+
+health$leisure_activitity[health$leisure_activitity == -999 ] <- NA
+
+health$leisure_activitity <- factor(health$leisure_activitity, 
+                                    levels = c(1,0),
+                                    labels = c('yes','no'))
+
+health <- health |> 
+  select('ID','sleep','nap','smoke','drink',
+         'physical_activity','leisure_activitity','self_comment_health',
+         'disease','year','disage')
+
+
+data <- full_join(data, health, by = 'ID')
+
+#write_xlsx(data, "1-data2011.xlsx")
+
+try <- data
+
+
+
+
+
+# demo <- demo %>%
+#   mutate(ID = sub("(.)(.)$", "\\10\\2", ID))
+
+```
+
+
+
+```{r 2011患病年份}
+
+data$disage <- 2011-data$age+data$disage
+
+data$disage <- replace(data$disage, is.na(data$disage), 0)
+data$year <- replace(data$year, is.na(data$year), 0)
+
+
+
+data$disyear <- ifelse(data$year > 0, data$year, 
+                       ifelse(data$disage > 0, data$disage, NA))
+
+
+data <- data[,-20:-21]
+
+write_xlsx(data, "0-data2011.xlsx")
+```
+
+
+
+
+```{r}
+disease2013 <- read_dta('2013年全国追踪调查/health_status_and_functioning.dta') |> 
+  select('ID','da007_13_','da007_w2_2_13_','da009_1_13_','da009_2_13_') |> 
+  rename(disyear13 = da009_1_13_,
+         disage13 = da009_2_13_)
+
+
+disease2013$da007_13_ <- replace(disease2013$da007_13_, 
+                                 is.na(disease2013$da007_13_), -999)
+disease2013$da007_w2_2_13_ <- replace(disease2013$da007_w2_2_13_, 
+                                 is.na(disease2013$da007_w2_2_13_), -999)
+
+disease2013$disease13 <- ifelse(disease2013$da007_13_ > 0, disease2013$da007_13_, 
+                                disease2013$da007_w2_2_13_)
+
+disease2013$disease13[disease2013$disease13 == -999 ] <- NA
+
+disease2013 <- disease2013 |> 
+  select('ID','disease13','disyear13','disage13')
+
+write_xlsx(disease2013, "0-disease2013.xlsx")
+```
+
+
+
+
+
+```{r}
+disease2015 <- read_dta('2015年全国追踪调查/health_status_and_functioning.dta') |> 
+  select('ID','da007_13_','da007_w2_2_13_','da009_1_13_','da009_2_13_') |> 
+  rename(disyear15 = da009_1_13_,
+         disage15 = da009_2_13_)
+
+
+disease2015$da007_13_ <- replace(disease2015$da007_13_, 
+                                 is.na(disease2015$da007_13_), -999)
+disease2015$da007_w2_2_13_ <- replace(disease2015$da007_w2_2_13_, 
+                                 is.na(disease2015$da007_w2_2_13_), -999)
+
+disease2015$disease15 <- ifelse(disease2015$da007_13_ > 0, disease2015$da007_13_, 
+                                disease2015$da007_w2_2_13_)
+
+disease2015$disease15[disease2015$disease15 == -999 ] <- NA
+
+disease2015 <- disease2015 |> 
+  select('ID','disease15','disyear15','disage15')
+
+write_xlsx(disease2015, "0-disease2015.xlsx")
+
+
+
+```
+
+
+
+
+```{r}
+disease2018 <- read_dta('2018年全国追踪调查/health_status_and_functioning.dta') |> 
+  select('ID','da007_13_','da009_1_13_','da009_2_13_') |> 
+  rename(disease18 = da007_13_,
+         disyear18 = da009_1_13_,
+         disage18 = da009_2_13_)
+
+write_xlsx(disease2018, "0-disease2018.xlsx")
+
+
+
+
+```
+
+
+```{r}
+disease2020 <- read_dta('2020年全国追踪调查/Health_Status_and_Functioning.dta') |> 
+  select('ID','da003_14_','da002_14_') |> 
+  rename(disease20 = da003_14_)
+
+write_xlsx(disease2020, "0-disease2020.xlsx")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

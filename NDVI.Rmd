@@ -1,0 +1,202 @@
+
+
+```{r}
+
+library(readxl)
+
+data30_province <- read_xlsx("30米年NDVI数据-2000年.xlsx", sheet = 1)
+data30_county <- read_xlsx("30米年NDVI数据-2000年.xlsx", sheet = 2)
+
+data250_province <- read_xlsx("250米年NDVI数据-2000年.xlsx", sheet = 1)
+data250_county <- read_xlsx("250米年NDVI数据-2000年.xlsx", sheet = 2)
+
+
+
+```
+
+
+```{r}
+data30_province$MEAN <- data30_province$MEAN/10000
+data30_county$MEAN <- data30_county$MEAN/10000
+
+library(tidyverse)
+data <- inner_join(data30_province, data250_province, by = 'NAME')
+shapiro.test(data$MEAN.x)
+shapiro.test(data$MEAN.y)
+wilcox.test(data$MEAN.x,data$MEAN.y,paired = F, correct = F)
+
+boxplot(data$MEAN.x,data$MEAN.y)
+wilcox.test(data$MEAN.x,data$MEAN.y,paired = T,alternative = "two.sided",
+            exact = F, correct = T)
+
+
+
+library(ggpubr)
+ggdensity(data$MEAN.x)
+ggdensity(data$MEAN.y)
+
+plot(data$MEAN.x,data$MEAN.y) +
+  abline(0,1)
+
+data2 <- inner_join(data30_county, data250_county, by = 'NAME')
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = T,alternative = "two.sided",
+            exact = F, correct = T)
+
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = F, correct = F)
+
+
+data2 <- data2 |> 
+  select('NAME','MEAN.x','MEAN.y')
+```
+
+
+
+```{r}
+didian <- read_xlsx("地点_总.xlsx") |> 
+  select('FID','NAME')
+
+didian <- unique(didian$NAME) |> 
+  as.data.frame()
+colnames(didian) <- c('NAME')
+
+data2 <- inner_join(data2,didian,by = 'NAME')
+
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = T,alternative = "greater",
+            exact = F, correct = T)
+
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = F, correct = T)
+
+
+library(ggpubr)
+ggdensity(data2$MEAN.x)
+ggdensity(data2$MEAN.y)
+
+plot(data2$MEAN.x,data2$MEAN.y) +
+  abline(0,1)
+```
+
+
+
+
+```{r}
+library(readxl)
+
+data1_province <- read_xlsx("1km年NDVI数据-2000年.xlsx", sheet = 1)
+data1_county <- read_xlsx("1km年NDVI数据-2000年.xlsx", sheet = 2)
+
+```
+
+
+
+```{r}
+data <- inner_join(data30_province, data1_province, by = 'NAME')
+shapiro.test(data$MEAN.x)
+shapiro.test(data$MEAN.y)
+
+wilcox.test(data$MEAN.x,data$MEAN.y,paired = F,alternative = "two.sided",
+            exact = F, correct = T)
+
+```
+
+
+```{r}
+
+data2 <- inner_join(data30_county, data1_county, by = 'NAME') 
+shapiro.test(data2$MEAN.x)
+shapiro.test(data2$MEAN.y)
+
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = F,alternative = "two.sided",
+            exact = F, correct = T)
+
+
+```
+
+
+
+```{r}
+didian <- read_xlsx("地点_总.xlsx") |> 
+  select('FID','NAME')
+
+didian <- unique(didian$NAME) |> 
+  as.data.frame()
+colnames(didian) <- c('NAME')
+
+data2 <- inner_join(data2,didian,by = 'NAME')
+
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = T,alternative = "greater",
+            exact = F, correct = T)
+
+wilcox.test(data2$MEAN.x,data2$MEAN.y,paired = F, correct = T)
+
+
+library(ggpubr)
+ggdensity(data2$MEAN.x)
+ggdensity(data2$MEAN.y)
+
+plot(data2$MEAN.x,data2$MEAN.y) +
+  abline(0,1)
+```
+
+
+```{r}
+try <- data2$MEAN.x-data2$MEAN.y
+try
+
+data2 <- data2 |> 
+  select('MEAN.x','MEAN.y')
+```
+
+
+
+```{r}
+
+library(readxl)
+library(tidyverse)
+
+data <- read_xlsx("1km年NDVI数据县级汇总2010-2019年.xlsx", sheet = 2)
+
+#data <- data[,-2]
+
+didian <- read_xlsx("地点_总.xlsx") |> 
+  select('FID','NAME')
+
+
+data2 <- inner_join(data,didian,by = 'NAME')
+
+
+NDVI <- pivot_longer(data2,
+                     cols = -c('NAME','FID'),       # 除year外均转换
+                     names_to = "year",
+                     values_to = "NDVI")
+
+NDVI <- NDVI |> 
+  select('FID','NAME','year','NDVI') |> 
+  rename(station = NAME)
+
+save(NDVI,
+     file ="NDVI.RData")
+writexl::write_xlsx(NDVI, "1-NDVI.xlsx")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

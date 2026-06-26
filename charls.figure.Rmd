@@ -1,0 +1,1380 @@
+
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(writexl)
+
+```
+
+
+
+```{r}
+pdata <- read_xlsx("9-F1.xlsx",sheet = 1)
+pdata$id <- as.factor(pdata$id)
+
+pdata2 <- read_xlsx("9-F1.xlsx",sheet = 2)
+pdata2$id <- as.factor(pdata2$id)
+
+pdata3 <- read_xlsx("9-F1.xlsx",sheet = 3)
+pdata3$id <- as.factor(pdata3$id)
+
+pdata4 <- read_xlsx("9-F1.xlsx",sheet = 4)
+pdata4$id <- as.factor(pdata4$id)
+
+pdata5 <- read_xlsx("9-F1.xlsx",sheet = 5)
+pdata5$id <- as.factor(pdata5$id)
+
+pdata6 <- read_xlsx("9-F1.xlsx",sheet = 6)
+pdata6$id <- as.factor(pdata6$id)
+
+```
+
+
+```{r}
+p1 <- pdata |> mutate(type = ifelse(Variable == ">mean","#4575b4","grey")) |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=type),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=type),size=1)+
+  scale_color_identity()+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Age', y = 'Cold Spell') +
+  theme(#axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        #axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        axis.line.y = element_line(),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d",
+                              "3" = "", "4" = "cs2.5_3d",
+                              "5" = "", "6" = "cs2.5_4d",
+                              "7" = "", "8" = "cs5_2d",
+                              "9" = "", "10" = "cs5_3d",
+                              "11" = "", "12" = "cs5_4d",
+                              "13" = "", "14" = "cs7.5_2d",
+                              "15" = "", "16" = "cs7.5_3d",
+                              "17" = "", "18" = "cs7.5_4d",
+                              "19" = "", "20" = "cs10_2d",
+                              "21" = "", "22" = "cs10_3d",
+                              "23" = "", "24" = "cs10_4d"))+
+  scale_color_manual(values = c('grey','#4575b4'),
+                     labels = c('<mean','>mean'))+
+  theme(legend.position = c(0.25,0.95),
+        legend.title = element_blank())+
+  theme(axis.text.y = element_text(vjust=-0.5))
+p1
+```
+
+
+```{r}
+p1 <- pdata |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  #scale_color_identity()+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Age', y = 'Cold Spell') +
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d",
+                              "3" = "", "4" = "cs2.5_3d",
+                              "5" = "", "6" = "cs2.5_4d",
+                              "7" = "", "8" = "cs5_2d",
+                              "9" = "", "10" = "cs5_3d",
+                              "11" = "", "12" = "cs5_4d",
+                              "13" = "", "14" = "cs7.5_2d",
+                              "15" = "", "16" = "cs7.5_3d",
+                              "17" = "", "18" = "cs7.5_4d",
+                              "19" = "", "20" = "cs10_2d",
+                              "21" = "", "22" = "cs10_3d",
+                              "23" = "", "24" = "cs10_4d"))+
+  scale_color_manual(breaks=c('<mean', '>mean'),
+                     values=c('<mean'='#FF7C7C', '>mean'='#FEB64D'))+
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank()) +
+  annotate("text",x=2.25,y=12, label ="***")
+p1
+```
+
+
+```{r }
+p2 <- pdata2 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Gender')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('male', 'female'),
+                     values=c('male'='#FFB74D', 'female'='#4FC3F7'))+
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank())
+p2
+```
+
+
+```{r }
+p3 <- pdata3 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Education')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('college or above', 'secondary school','no'),
+                     values=c('college or above'='#B39DDB', 'secondary school'='#32D3EB',
+                              'no'='#AED581'))+
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank())
+p3
+```
+
+
+
+```{r}
+p4 <- pdata4 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Marital status', y = 'Cold Spell') +
+  theme(#axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        #axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d","3" = "",
+                              "4" = "", "5" = "cs2.5_3d","6" = "",
+                              "7" = "", "8" = "cs2.5_4d","9" = "",
+                              "10" = "", "11" = "cs5_2d","12" = "",
+                              "13" = "", "14" = "cs5_3d","15" = "",
+                              "16" = "", "17" = "cs5_4d","18" = "",
+                              "19" = "", "20" = "cs7.5_2d","21" = "",
+                              "22" = "", "23" = "cs7.5_3d","24" = "",
+                              "25" = "", "26" = "cs7.5_4d","27" = "",
+                              "28" = "", "29" = "cs10_2d","30" = "",
+                              "31" = "", "32" = "cs10_3d","33" = "",
+                              "34" = "", "35" = "cs10_4d","36" = ""))+
+  
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank())
+p4
+```
+
+
+```{r}
+p4 <- pdata4 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Marital status', y = 'Cold Spell') +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                ))+
+  scale_color_manual(breaks=c('married', 'separated/divorced/widowed','never'),
+                     values=c('married'='#CE93D8', 'separated/divorced/widowed'='#60ACFC',
+                              'never'='#5BC49F'))+
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank())
+p4
+```
+
+
+```{r }
+p5 <- pdata5 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Pension')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#F06292', 'no'='#A1887F'))+
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank())
+p5
+```
+
+```{r }
+p6 <- pdata6 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=Lower, xmax=Upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Leisure activitity')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.3, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#FFB74D', 'no'='#9287E7'))+
+  theme(legend.position = c(0.7,0.1),
+        legend.title = element_blank())
+p6
+```
+
+
+
+
+```{r F1}
+library(Rmisc)
+multiplot(p1,p4,p2,p5,p3,p6,cols = 3)
+
+pdf("9-F1.pdf",
+    height = 10,
+    width = 15)
+multiplot(p1,p2,p3,p4,p5,p6,cols = 6)
+dev.off()
+
+
+# library(gridExtra)
+# grid.arrange(p1, p2, ncol = 2)
+
+
+```
+
+
+
+```{r  F2.1}
+pdata <- read_xlsx("9-F2.1.xlsx",sheet = 1)
+pdata$id <- as.factor(pdata$id)
+
+pdata2 <- read_xlsx("9-F2.1.xlsx",sheet = 2)
+pdata2$id <- as.factor(pdata2$id)
+
+pdata3 <- read_xlsx("9-F2.1.xlsx",sheet = 3)
+pdata3$id <- as.factor(pdata3$id)
+
+pdata4 <- read_xlsx("9-F2.1.xlsx",sheet = 4)
+pdata4$id <- as.factor(pdata4$id)
+
+pdata5 <- read_xlsx("9-F2.1.xlsx",sheet = 5)
+pdata5$id <- as.factor(pdata5$id)
+
+pdata6 <- read_xlsx("9-F2.1.xlsx",sheet = 6)
+pdata6$id <- as.factor(pdata6$id)
+
+```
+
+
+
+
+```{r}
+p1 <- pdata |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  #scale_color_identity()+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Age', y = 'Cold Spell') +
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d",
+                              "3" = "", "4" = "cs2.5_3d",
+                              "5" = "", "6" = "cs2.5_4d",
+                              "7" = "", "8" = "cs5_2d",
+                              "9" = "", "10" = "cs5_3d",
+                              "11" = "", "12" = "cs5_4d",
+                              "13" = "", "14" = "cs7.5_2d",
+                              "15" = "", "16" = "cs7.5_3d",
+                              "17" = "", "18" = "cs7.5_4d",
+                              "19" = "", "20" = "cs10_2d",
+                              "21" = "", "22" = "cs10_3d",
+                              "23" = "", "24" = "cs10_4d"))+
+  scale_color_manual(breaks=c('<mean', '>mean'),
+                     values=c('<mean'='#FF7C7C', '>mean'='#FEB64D'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+p1
+
+```
+
+
+```{r}
+p2 <- pdata2 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Gender')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('male', 'female'),
+                     values=c('male'='#FFB74D', 'female'='#4FC3F7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p2
+
+
+
+
+p3 <- pdata3 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Education')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('college or above', 'secondary school','no'),
+                     values=c('college or above'='#B39DDB', 'secondary school'='#32D3EB',
+                              'no'='#AED581'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p3
+
+
+
+
+p4 <- pdata4 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Marital status', y = 'Cold Spell') +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_color_manual(breaks=c('married', 'separated/divorced/widowed','never'),
+                     values=c('married'='#CE93D8', 'separated/divorced/widowed'='#60ACFC',
+                              'never'='#5BC49F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p4
+
+
+
+
+p5 <- pdata5 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Pension')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#F06292', 'no'='#A1887F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p5
+
+
+
+p6 <- pdata6 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Leisure activitity')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#FFB74D', 'no'='#9287E7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+   
+p6
+```
+
+
+
+
+```{r F2.1}
+library(Rmisc)
+multiplot(p1,p4,p2,p5,p3,p6,cols = 3)
+
+pdf("9-F2.1.pdf",
+    height = 10,
+    width = 15)
+multiplot(p1,p2,p3,p4,p5,p6,cols = 6)
+dev.off()
+
+
+# library(gridExtra)
+# grid.arrange(p1, p2, ncol = 2)
+
+
+```
+
+
+```{r  F2.2}
+pdata <- read_xlsx("9-F2.2.xlsx",sheet = 1)
+pdata$id <- as.factor(pdata$id)
+
+pdata2 <- read_xlsx("9-F2.2.xlsx",sheet = 2)
+pdata2$id <- as.factor(pdata2$id)
+
+pdata3 <- read_xlsx("9-F2.2.xlsx",sheet = 3)
+pdata3$id <- as.factor(pdata3$id)
+
+pdata4 <- read_xlsx("9-F2.2.xlsx",sheet = 4)
+pdata4$id <- as.factor(pdata4$id)
+
+pdata5 <- read_xlsx("9-F2.2.xlsx",sheet = 5)
+pdata5$id <- as.factor(pdata5$id)
+
+pdata6 <- read_xlsx("9-F2.2.xlsx",sheet = 6)
+pdata6$id <- as.factor(pdata6$id)
+
+```
+
+
+
+
+```{r}
+p1 <- pdata |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  #scale_color_identity()+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Age', y = 'Cold Spell') +
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d",
+                              "3" = "", "4" = "cs2.5_3d",
+                              "5" = "", "6" = "cs2.5_4d",
+                              "7" = "", "8" = "cs5_2d",
+                              "9" = "", "10" = "cs5_3d",
+                              "11" = "", "12" = "cs5_4d",
+                              "13" = "", "14" = "cs7.5_2d",
+                              "15" = "", "16" = "cs7.5_3d",
+                              "17" = "", "18" = "cs7.5_4d",
+                              "19" = "", "20" = "cs10_2d",
+                              "21" = "", "22" = "cs10_3d",
+                              "23" = "", "24" = "cs10_4d"))+
+  scale_color_manual(breaks=c('<mean', '>mean'),
+                     values=c('<mean'='#FF7C7C', '>mean'='#FEB64D'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+p1
+
+
+p2 <- pdata2 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Gender')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('male', 'female'),
+                     values=c('male'='#FFB74D', 'female'='#4FC3F7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p2
+
+
+
+
+p3 <- pdata3 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Education')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('college or above', 'secondary school','no'),
+                     values=c('college or above'='#B39DDB', 'secondary school'='#32D3EB',
+                              'no'='#AED581'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p3
+
+
+
+
+p4 <- pdata4 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Marital status', y = 'Cold Spell') +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_color_manual(breaks=c('married', 'separated/divorced/widowed','never'),
+                     values=c('married'='#CE93D8', 'separated/divorced/widowed'='#60ACFC',
+                              'never'='#5BC49F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p4
+
+
+
+
+p5 <- pdata5 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Pension')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#F06292', 'no'='#A1887F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p5
+
+
+
+p6 <- pdata6 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Leisure activitity')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#FFB74D', 'no'='#9287E7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+   
+p6
+```
+
+
+
+
+```{r F2.2}
+library(Rmisc)
+multiplot(p1,p4,p2,p5,p3,p6,cols = 3)
+
+pdf("9-F2.2.pdf",
+    height = 10,
+    width = 15)
+multiplot(p1,p2,p3,p4,p5,p6,cols = 6)
+dev.off()
+
+```
+
+
+```{r  SF2.1}
+pdata <- read_xlsx("9-SF2.1.xlsx",sheet = 1)
+pdata$id <- as.factor(pdata$id)
+
+pdata2 <- read_xlsx("9-SF2.1.xlsx",sheet = 2)
+pdata2$id <- as.factor(pdata2$id)
+
+pdata3 <- read_xlsx("9-SF2.1.xlsx",sheet = 3)
+pdata3$id <- as.factor(pdata3$id)
+
+pdata4 <- read_xlsx("9-SF2.1.xlsx",sheet = 4)
+pdata4$id <- as.factor(pdata4$id)
+
+pdata5 <- read_xlsx("9-SF2.1.xlsx",sheet = 5)
+pdata5$id <- as.factor(pdata5$id)
+
+pdata6 <- read_xlsx("9-SF2.1.xlsx",sheet = 6)
+pdata6$id <- as.factor(pdata6$id)
+
+```
+
+
+
+
+```{r}
+p1 <- pdata |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  #scale_color_identity()+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Age', y = 'Cold Spell') +
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d",
+                              "3" = "", "4" = "cs2.5_3d",
+                              "5" = "", "6" = "cs2.5_4d",
+                              "7" = "", "8" = "cs5_2d",
+                              "9" = "", "10" = "cs5_3d",
+                              "11" = "", "12" = "cs5_4d",
+                              "13" = "", "14" = "cs7.5_2d",
+                              "15" = "", "16" = "cs7.5_3d",
+                              "17" = "", "18" = "cs7.5_4d",
+                              "19" = "", "20" = "cs10_2d",
+                              "21" = "", "22" = "cs10_3d",
+                              "23" = "", "24" = "cs10_4d"))+
+  scale_color_manual(breaks=c('<mean', '>mean'),
+                     values=c('<mean'='#FF7C7C', '>mean'='#FEB64D'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+p1
+
+
+p2 <- pdata2 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Gender')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('male', 'female'),
+                     values=c('male'='#FFB74D', 'female'='#4FC3F7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p2
+
+
+
+
+p3 <- pdata3 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Education')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('college or above', 'secondary school','no'),
+                     values=c('college or above'='#B39DDB', 'secondary school'='#32D3EB',
+                              'no'='#AED581'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p3
+
+
+
+
+p4 <- pdata4 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Marital status', y = 'Cold Spell') +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_color_manual(breaks=c('married', 'separated/divorced/widowed','never'),
+                     values=c('married'='#CE93D8', 'separated/divorced/widowed'='#60ACFC',
+                              'never'='#5BC49F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p4
+
+
+
+
+p5 <- pdata5 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Pension')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#F06292', 'no'='#A1887F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p5
+
+
+
+p6 <- pdata6 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = OR,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=1),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Leisure activitity')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#FFB74D', 'no'='#9287E7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+   
+p6
+
+library(Rmisc)
+multiplot(p1,p4,p2,p5,p3,p6,cols = 3)
+
+pdf("9-SF2.1.pdf",
+    height = 10,
+    width = 15)
+multiplot(p1,p2,p3,p4,p5,p6,cols = 6)
+dev.off()
+
+```
+
+
+
+
+```{r  SF5.2}
+pdata <- read_xlsx("10-SF5.2.xlsx",sheet = 1)
+pdata$id <- as.factor(pdata$id)
+
+pdata2 <- read_xlsx("10-SF5.2.xlsx",sheet = 2)
+pdata2$id <- as.factor(pdata2$id)
+
+pdata3 <- read_xlsx("10-SF5.2.xlsx",sheet = 3)
+pdata3$id <- as.factor(pdata3$id)
+
+pdata4 <- read_xlsx("10-SF5.2.xlsx",sheet = 4)
+pdata4$id <- as.factor(pdata4$id)
+
+pdata5 <- read_xlsx("10-SF5.2.xlsx",sheet = 5)
+pdata5$id <- as.factor(pdata5$id)
+
+pdata6 <- read_xlsx("10-SF5.2.xlsx",sheet = 6)
+pdata6$id <- as.factor(pdata6$id)
+
+```
+
+
+
+
+```{r}
+p1 <- pdata |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = RERI,color=Variable),size=1)+
+  #scale_color_identity()+
+  geom_vline(aes(xintercept=0),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Age', y = 'Cold Spell') +
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_y_discrete(labels = c("1" = "", "2" = "cs2.5_2d",
+                              "3" = "", "4" = "cs2.5_3d",
+                              "5" = "", "6" = "cs2.5_4d",
+                              "7" = "", "8" = "cs5_2d",
+                              "9" = "", "10" = "cs5_3d",
+                              "11" = "", "12" = "cs5_4d",
+                              "13" = "", "14" = "cs7.5_2d",
+                              "15" = "", "16" = "cs7.5_3d",
+                              "17" = "", "18" = "cs7.5_4d",
+                              "19" = "", "20" = "cs10_2d",
+                              "21" = "", "22" = "cs10_3d",
+                              "23" = "", "24" = "cs10_4d"))+
+  scale_color_manual(breaks=c('<mean', '>mean'),
+                     values=c('<mean'='#FF7C7C', '>mean'='#FEB64D'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+p1
+
+
+p2 <- pdata2 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = RERI,color=Variable),size=1)+
+  geom_vline(aes(xintercept=0),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Gender')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('male', 'female'),
+                     values=c('male'='#FFB74D', 'female'='#4FC3F7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p2
+
+
+
+
+p3 <- pdata3 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = RERI,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=0),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Education')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('college or above', 'secondary school','no'),
+                     values=c('college or above'='#B39DDB', 'secondary school'='#32D3EB',
+                              'no'='#AED581'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p3
+
+
+
+
+p4 <- pdata4 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = RERI,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=0),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Marital status', y = 'Cold Spell') +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                ))+
+  scale_color_manual(breaks=c('married', 'separated/divorced/widowed','never'),
+                     values=c('married'='#CE93D8', 'separated/divorced/widowed'='#60ACFC',
+                              'never'='#5BC49F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p4
+
+
+
+
+p5 <- pdata5 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = RERI,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=0),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Pension')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#F06292', 'no'='#A1887F'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+  
+p5
+
+
+
+p6 <- pdata6 |> 
+  ggplot()+
+  geom_errorbarh(aes(y=fct_rev(id),xmin=lower, xmax=upper,color=Variable),
+                 height=0.3, 
+                 size=.8
+                 )+
+  geom_point(aes(y = fct_rev(id), x = RERI,color=Variable),size=1)+
+  
+  geom_vline(aes(xintercept=0),linetype=2,size=0.8,color="grey")+
+  labs(title = 'Leisure activitity')+
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        axis.line.x = element_line(colour = "black"),
+        plot.title=element_text(color="black", #颜色
+                                size=12,  #大小
+                                hjust=0.2, #位置
+                                vjust=0.5
+                                )
+        )+
+  scale_color_manual(breaks=c('yes', 'no'),
+                     values=c('yes'='#FFB74D', 'no'='#9287E7'))+
+  theme(legend.position = 'top',
+        legend.title = element_blank())
+   
+p6
+
+library(Rmisc)
+multiplot(p1,p4,p2,p5,p3,p6,cols = 3)
+
+pdf("10-SF5.2.pdf",
+    height = 10,
+    width = 15)
+multiplot(p1,p2,p3,p4,p5,p6,cols = 6)
+dev.off()
+
+```
+
+
+
+
+```{r didian}
+
+psu <- read_xlsx("D:/蓝绿空间/psu.xlsx") |> 
+  select('communityID','province','nanbei')
+alldata <- left_join(data_lag1, psu, by = 'communityID')
+
+
+```
+
+
+
+```{r}
+colnames(alldata)
+alldata$nanbei <- as.factor(alldata$nanbei)
+cs <- c('cs2.5_2d', 'cs2.5_3d','cs2.5_4d',
+                   'cs5_2d','cs5_3d','cs5_4d',
+                   'cs7.5_2d','cs7.5_3d','cs7.5_4d',
+                   'cs10_2d','cs10_3d','cs10_4d')
+
+
+glm_model1<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "+ nanbei"))
+  glm1<-glm(FML,data=alldata)
+  fitSum<-summary(glm1)
+  ResultMul <- fitSum$coef[2,]
+  OR<-exp(ResultMul['Estimate'])
+  CI <- exp(confint(glm1))[2,]
+  P <- ResultMul['Pr(>|t|)']
+  glm_model1 <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model1)
+}  
+
+
+variable.names<- colnames(alldata)[c(18:35)]
+variable.names 
+
+glm1 <- lapply(variable.names, glm_model1)
+
+library(plyr)
+glm1<- ldply(glm1,data.frame)
+glm1
+
+write.csv(glm1, "12-t11.2.csv", row.names = F)
+```
+
+
+
+```{r}
+
+library(jstable)
+
+
+glm_model_sub<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm_model_sub<-TableSubgroupMultiGLM(
+  formula = FML, 
+  var_subgroups = c("nanbei"), 
+  data = alldata 
+  )
+  glm_model_sub$cs <- x
+  return(glm_model_sub)
+}  
+
+
+variable.names<- colnames(alldata)[c(24:35)]
+variable.names 
+
+glm_sub <- lapply(variable.names, glm_model_sub)
+
+library(plyr)
+glm_sub<- ldply(glm_sub, data.frame)
+glm_sub
+
+write.csv(glm_sub, "12-F1.csv", row.names = F)
+```
+
+
+
+```{r}
+library(tableone)
+
+cliOut <- CreateTableOne(data = alldata[,3:ncol(alldata)], strata = c("disease"),
+                         addOverall = TRUE)
+cliOut <- print(cliOut, showAllLevels = TRUE)
+
+write.csv(cliOut, "12-T1T2.try.csv")
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1157 @@
+
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(writexl)
+
+```
+
+
+
+```{r T1T2}
+library(tableone)
+
+cliOut <- CreateTableOne(data = data_lag1[,3:ncol(data_lag1)], strata = c("disease"),
+                         addOverall = TRUE)
+cliOut <- print(cliOut, showAllLevels = TRUE)
+
+t1t2 <- cliOut
+write.csv(t1t2, "4-T1T2.csv")
+
+cliOut <- print(cliOut, showAllLevels = TRUE,
+                nonnormal = c('age','sleep','nap',"cs2.5_2d","cs2.5_3d","cs2.5_4d",
+                              "cs5_2d","cs5_3d","cs5_4d","cs7.5_2d","cs7.5_3d", "cs7.5_4d",
+                              "cs10_2d","cs10_3d","cs10_4d",
+                              'NDVI','AI','RH','VPD','SH','PRCP'
+                              ))
+write.csv(cliOut, "12-T1T2.csv")
+```
+
+
+
+
+
+```{r t3.1_ST2}
+
+
+Uni_glm_model<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm1<-glm(FML,data=data_lag1,family = binomial)
+  glm2<-summary(glm1)
+  OR<-round(exp(coef(glm1)),4)
+  SE<-glm2$coefficients[,2]
+  CI5<-round(exp(coef(glm1)-1.96*SE),4)
+  CI95<-round(exp(coef(glm1)+1.96*SE),4)
+  CI<-paste0(CI5,'-',CI95)
+  P<-round(glm2$coefficients[,4],4)
+  Uni_glm_model <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'CI' = CI,
+                              'P' = P)[-1,]
+  return(Uni_glm_model)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(4:35)]
+variable.names 
+
+Uni_glm <- lapply(variable.names, Uni_glm_model)
+
+library(plyr)
+Uni_glm<- ldply(Uni_glm,data.frame)
+Uni_glm
+
+write.csv(Uni_glm,"4-t3.1_ST2.csv",row.names = F)
+```
+
+
+```{r ST7.8.2}
+Uni_glm_model<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm1<-glm(FML,data=data_lag2,family = binomial)
+  glm2<-summary(glm1)
+  OR<-round(exp(coef(glm1)),3)
+  SE<-glm2$coefficients[,2]
+  CI5<-round(exp(coef(glm1)-1.96*SE),3)
+  CI95<-round(exp(coef(glm1)+1.96*SE),3)
+  CI<-paste0(CI5,'-',CI95)
+  P<-round(glm2$coefficients[,4],3)
+  Uni_glm_model <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'CI' = CI,
+                              'P' = P)[-1,]
+  return(Uni_glm_model)
+}  
+
+
+variable.names<- colnames(data_lag2)[c(4:35)]
+variable.names 
+
+Uni_glm <- lapply(variable.names, Uni_glm_model)
+
+library(plyr)
+Uni_glm<- ldply(Uni_glm,data.frame)
+Uni_glm
+
+write.csv(Uni_glm,"4-ST78.2.csv",row.names = F)
+```
+
+
+```{r ST7.8.3}
+Uni_glm_model<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm1<-glm(FML,data=data_lag3,family = binomial)
+  glm2<-summary(glm1)
+  OR<-round(exp(coef(glm1)),3)
+  SE<-glm2$coefficients[,2]
+  CI5<-round(exp(coef(glm1)-1.96*SE),3)
+  CI95<-round(exp(coef(glm1)+1.96*SE),3)
+  CI<-paste0(CI5,'-',CI95)
+  P<-round(glm2$coefficients[,4],3)
+  Uni_glm_model <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'CI' = CI,
+                              'P' = P)[-1,]
+  return(Uni_glm_model)
+}  
+
+
+variable.names<- colnames(data_lag3)[c(4:35)]
+variable.names 
+
+Uni_glm <- lapply(variable.names, Uni_glm_model)
+
+library(plyr)
+Uni_glm<- ldply(Uni_glm,data.frame)
+Uni_glm
+
+write.csv(Uni_glm,"4-ST78.3.csv",row.names = F)
+```
+
+
+```{r ST7.8.0}
+Uni_glm_model<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm1<-glm(FML,data=data_lag0,family = binomial)
+  glm2<-summary(glm1)
+  OR<-round(exp(coef(glm1)),3)
+  SE<-glm2$coefficients[,2]
+  CI5<-round(exp(coef(glm1)-1.96*SE),3)
+  CI95<-round(exp(coef(glm1)+1.96*SE),3)
+  CI<-paste0(CI5,'-',CI95)
+  P<-round(glm2$coefficients[,4],3)
+  Uni_glm_model <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'CI' = CI,
+                              'P' = P)[-1,]
+  return(Uni_glm_model)
+}  
+
+
+variable.names<- colnames(data_lag0)[c(4:35)]
+variable.names 
+
+Uni_glm <- lapply(variable.names, Uni_glm_model)
+
+library(plyr)
+Uni_glm<- ldply(Uni_glm,data.frame)
+Uni_glm
+
+write.csv(Uni_glm,"4-ST78.0.csv",row.names = F)
+```
+
+
+
+```{r t3.2}
+colnames(data_lag1)
+
+cs <- c('cs2.5_2d', 'cs2.5_3d','cs2.5_4d',
+                   'cs5_2d','cs5_3d','cs5_4d',
+                   'cs7.5_2d','cs7.5_3d','cs7.5_4d',
+                   'cs10_2d','cs10_3d','cs10_4d')
+
+
+glm_model1<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "+ age + gender+education"))
+  glm1<-glm(FML,data=data_lag1)
+  fitSum<-summary(glm1)
+  ResultMul <- fitSum$coef[2,]
+  OR<-exp(ResultMul['Estimate'])
+  CI <- exp(confint(glm1))[2,]
+  P <- ResultMul['Pr(>|t|)']
+  glm_model1 <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model1)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(18:35)]
+variable.names 
+
+glm1 <- lapply(variable.names, glm_model1)
+
+library(plyr)
+glm1<- ldply(glm1,data.frame)
+glm1
+
+write.csv(glm1, "4-t3.2.csv", row.names = F)
+```
+
+
+
+```{r t3.3 t3.4}
+
+glm_model2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "+ age + gender + education +
+             marital_status+smoke+drink+sleep+nap+
+             leisure_activitity+self_comment_health"))
+  glm1<-glm(FML,data=data_lag1)
+  fitSum<-summary(glm1)
+  ResultMul <- fitSum$coef[2,]
+  OR<-exp(ResultMul['Estimate'])
+  CI <- exp(confint(glm1))[2,]
+  P <- ResultMul['Pr(>|t|)']
+  glm_model2 <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(18:35)]
+variable.names 
+
+glm2 <- lapply(variable.names, glm_model2)
+
+library(plyr)
+glm2<- ldply(glm2,data.frame)
+glm2
+
+write.csv(glm2, "4-t3.3.csv", row.names = F)
+
+glm_model3<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "+ age + gender+ education +
+             marital_status+smoke+drink+sleep+nap+
+             leisure_activitity+self_comment_health+
+             pension+insurance+heating+cook_fuel"))
+  glm1<-glm(FML,data=data_lag1)
+  fitSum<-summary(glm1)
+  ResultMul <- fitSum$coef[2,]
+  OR<-exp(ResultMul['Estimate'])
+  CI <- exp(confint(glm1))[2,]
+  P <- ResultMul['Pr(>|t|)']
+  glm_model3 <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model3)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(18:35)]
+variable.names 
+
+glm3 <- lapply(variable.names, glm_model3)
+
+library(plyr)
+glm3<- ldply(glm3,data.frame)
+glm3
+
+write.csv(glm3, "4-t3.4.csv", row.names = F)
+
+```
+
+
+```{r T4}
+
+glm_model_NDVI<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*NDVI"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_NDVI <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_NDVI)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_NDVI <- lapply(variable.names, glm_model_NDVI)
+
+library(plyr)
+glm_NDVI<- ldply(glm_NDVI, data.frame)
+glm_NDVI
+
+write.csv(glm_NDVI, "5-T4.1.csv", row.names = F)
+
+
+glm_model_RH<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*RH"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_RH <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_RH)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_RH <- lapply(variable.names, glm_model_RH)
+
+library(plyr)
+glm_RH<- ldply(glm_RH, data.frame)
+glm_RH
+
+write.csv(glm_RH, "5-T4.2.csv", row.names = F)
+```
+
+
+```{r ST3}
+glm_model_PRCP<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*PRCP"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_PRCP <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_PRCP)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_PRCP <- lapply(variable.names, glm_model_PRCP)
+
+library(plyr)
+glm_PRCP<- ldply(glm_PRCP, data.frame)
+glm_PRCP
+
+write.csv(glm_PRCP, "5-ST3.1.csv", row.names = F)
+
+glm_model_AI<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*AI"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_AI <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_AI)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_AI <- lapply(variable.names, glm_model_AI)
+
+library(plyr)
+glm_AI<- ldply(glm_AI, data.frame)
+glm_AI
+
+write.csv(glm_AI, "5-ST3.2.csv", row.names = F)
+
+
+```
+
+```{r ST5}
+glm_model_VPD<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*VPD"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_VPD <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_VPD)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_VPD <- lapply(variable.names, glm_model_VPD)
+
+library(plyr)
+glm_VPD<- ldply(glm_VPD, data.frame)
+glm_VPD
+
+write.csv(glm_VPD, "5-ST5.1.csv", row.names = F)
+
+glm_model_SH<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*SH"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_SH <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_SH)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_SH <- lapply(variable.names, glm_model_SH)
+
+library(plyr)
+glm_SH<- ldply(glm_SH, data.frame)
+glm_SH
+
+write.csv(glm_SH, "5-ST5.2.csv", row.names = F)
+
+
+```
+
+
+```{r T5}
+glm_model_NDVI2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*NDVI"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("NDVI", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_NDVI2 <- out$dframe[c(1:4,10), ]
+  glm_model_NDVI2$cs <- x
+  colnames(glm_model_NDVI2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_NDVI2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_NDVI2 <- lapply(variable.names, glm_model_NDVI2)
+
+library(plyr)
+glm_NDVI2<- ldply(glm_NDVI2, data.frame)
+glm_NDVI2
+write.csv(glm_NDVI2, "6-T5.1.csv", row.names = F)
+
+
+
+glm_model_RH2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*RH"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("RH", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_RH2 <- out$dframe[c(1:4,10), ]
+  glm_model_RH2$cs <- x
+  colnames(glm_model_RH2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_RH2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_RH2 <- lapply(variable.names, glm_model_RH2)
+
+library(plyr)
+glm_RH2<- ldply(glm_RH2, data.frame)
+glm_RH2
+write.csv(glm_RH2, "6-T5.2.csv", row.names = F)
+```
+
+
+```{r ST4}
+glm_model_PRCP2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*PRCP"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("PRCP", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_PRCP2 <- out$dframe[c(1:4,10), ]
+  glm_model_PRCP2$cs <- x
+  colnames(glm_model_PRCP2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_PRCP2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_PRCP2 <- lapply(variable.names, glm_model_PRCP2)
+
+library(plyr)
+glm_PRCP2<- ldply(glm_PRCP2, data.frame)
+glm_PRCP2
+write.csv(glm_PRCP2, "6-ST4.1.csv", row.names = F)
+
+
+
+glm_model_AI2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*AI"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("AI", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_AI2 <- out$dframe[c(1:4,10), ]
+  glm_model_AI2$cs <- x
+  colnames(glm_model_AI2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_AI2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_AI2 <- lapply(variable.names, glm_model_AI2)
+
+library(plyr)
+glm_AI2<- ldply(glm_AI2, data.frame)
+glm_AI2
+write.csv(glm_AI2, "6-ST4.2.csv", row.names = F)
+```
+
+
+
+```{r ST6}
+glm_model_VPD2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*VPD"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("VPD", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_VPD2 <- out$dframe[c(1:4,10), ]
+  glm_model_VPD2$cs <- x
+  colnames(glm_model_VPD2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_VPD2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_VPD2 <- lapply(variable.names, glm_model_VPD2)
+
+library(plyr)
+glm_VPD2<- ldply(glm_VPD2, data.frame)
+glm_VPD2
+write.csv(glm_VPD2, "6-ST6.1.csv", row.names = F)
+
+
+
+glm_model_SH2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*SH"))
+  dat.glm01<-glm(FML,data=data_lag1)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("SH", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_SH2 <- out$dframe[c(1:4,10), ]
+  glm_model_SH2$cs <- x
+  colnames(glm_model_SH2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_SH2)
+}  
+
+
+variable.names<- colnames(data_lag1)[c(24:35)]
+variable.names 
+
+glm_SH2 <- lapply(variable.names, glm_model_SH2)
+
+library(plyr)
+glm_SH2<- ldply(glm_SH2, data.frame)
+glm_SH2
+write.csv(glm_SH2, "6-ST6.2.csv", row.names = F)
+```
+
+
+
+
+```{r F1}
+
+alldata <- data_lag1 
+alldata$age = as.factor(ifelse(data_lag1$age >mean(data_lag1$age), 1, 0))
+
+
+library(jstable)
+
+
+glm_model_sub<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x))
+  glm_model_sub<-TableSubgroupMultiGLM(
+  formula = FML, 
+  var_subgroups = c("age","gender","education","marital_status",
+                    "pension","leisure_activitity"), 
+  data = alldata 
+  )
+  glm_model_sub$cs <- x
+  return(glm_model_sub)
+}  
+
+
+variable.names<- colnames(alldata)[c(24:35)]
+variable.names 
+
+glm_sub <- lapply(variable.names, glm_model_sub)
+
+library(plyr)
+glm_sub<- ldply(glm_sub, data.frame)
+glm_sub
+
+write.csv(glm_sub, "7-F1.csv", row.names = F)
+
+
+```
+
+
+```{r F2}
+
+alldata <- data_lag1 
+alldata$age = as.factor(ifelse(data_lag1$age >mean(data_lag1$age), 1, 0))
+
+data_age1 <- alldata[alldata$age == 1,]
+data_age0 <- alldata[alldata$age == 0,]
+
+data_gender1 <- alldata[alldata$gender == 1,]
+data_gender2 <- alldata[alldata$gender == 2,]
+
+data_education1 <- alldata[alldata$education == 'no',]
+data_education2 <- alldata[alldata$education == 'secondary school',]
+data_education3 <- alldata[alldata$education == 'college or above',]
+
+data_marry1 <- alldata[alldata$marital_status == 'married',]
+data_marry2 <- alldata[alldata$marital_status == 'separated/divorced/widowed',]
+data_marry3 <- alldata[alldata$marital_status == 'never',]
+
+data_pension1 <- alldata[alldata$pension == 'yes',]
+data_pension2 <- alldata[alldata$pension == 'no',]
+
+data_leisure1 <- alldata[alldata$leisure_activitity == 'yes',]
+data_leisure2 <- alldata[alldata$leisure_activitity == 'no',]
+
+
+
+```
+
+
+
+
+```{r F2}
+
+glm_model_NDVI<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*NDVI"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_NDVI <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_NDVI)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_NDVI <- lapply(variable.names, glm_model_NDVI)
+
+library(plyr)
+glm_NDVI<- ldply(glm_NDVI, data.frame)
+glm_NDVI
+
+write.csv(glm_NDVI, "7-F2.1_leisure2.csv", row.names = F)
+
+
+glm_model_RH<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*RH"))
+  dat.glm01<-glm(FML,data=data_education3)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_RH <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_RH)
+}  
+
+
+variable.names<- colnames(data_education3)[c(24:35)]
+variable.names 
+
+glm_RH <- lapply(variable.names, glm_model_RH)
+
+library(plyr)
+glm_RH<- ldply(glm_RH, data.frame)
+glm_RH
+
+write.csv(glm_RH, "7-F2.2_education3.csv", row.names = F)
+```
+
+
+```{r SF2}
+glm_model_PRCP<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*PRCP"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_PRCP <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_PRCP)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_PRCP <- lapply(variable.names, glm_model_PRCP)
+
+library(plyr)
+glm_PRCP<- ldply(glm_PRCP, data.frame)
+glm_PRCP
+
+write.csv(glm_PRCP, "7-SF2.1_leisure2.csv", row.names = F)
+
+glm_model_AI<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*AI"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_AI <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_AI)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_AI <- lapply(variable.names, glm_model_AI)
+
+library(plyr)
+glm_AI<- ldply(glm_AI, data.frame)
+glm_AI
+
+write.csv(glm_AI, "7-SF2.2_leisure2.csv", row.names = F)
+
+
+```
+
+```{r SF4}
+glm_model_VPD<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*VPD"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_VPD <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_VPD)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_VPD <- lapply(variable.names, glm_model_VPD)
+
+library(plyr)
+glm_VPD<- ldply(glm_VPD, data.frame)
+glm_VPD
+
+write.csv(glm_VPD, "7-SF4.1_leisure2.csv", row.names = F)
+
+glm_model_SH<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*SH"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  OR <- exp(coef(dat.glm01))[4]
+  CI <- exp(confint(dat.glm01))[4,]
+  P <- summary(dat.glm01)$coef[4,][4]
+  glm_model_SH <- data.frame('Characteristics'=x,
+                              'OR' = OR,
+                              'lower' = CI[1],
+                              'upper' = CI[2],
+                              'P' = P)
+  return(glm_model_SH)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_SH <- lapply(variable.names, glm_model_SH)
+
+library(plyr)
+glm_SH<- ldply(glm_SH, data.frame)
+glm_SH
+
+write.csv(glm_SH, "7-SF4.2_leisure2.csv", row.names = F)
+
+
+```
+
+```{r }
+data_age1 <- alldata[alldata$age == 1,]
+data_age0 <- alldata[alldata$age == 0,]
+
+data_gender1 <- alldata[alldata$gender == 1,]
+data_gender2 <- alldata[alldata$gender == 2,]
+
+data_education1 <- alldata[alldata$education == 'no',]
+data_education2 <- alldata[alldata$education == 'secondary school',]
+data_education3 <- alldata[alldata$education == 'college or above',]
+
+data_marry1 <- alldata[alldata$marital_status == 'married',]
+data_marry2 <- alldata[alldata$marital_status == 'separated/divorced/widowed',]
+data_marry3 <- alldata[alldata$marital_status == 'never',]
+
+data_pension1 <- alldata[alldata$pension == 'yes',]
+data_pension2 <- alldata[alldata$pension == 'no',]
+
+data_leisure1 <- alldata[alldata$leisure_activitity == 'yes',]
+data_leisure2 <- alldata[alldata$leisure_activitity == 'no',]
+
+
+
+```
+
+
+
+
+
+```{r F3 SF3 SF5}
+library(interactionR)
+
+glm_model_NDVI2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*NDVI"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("NDVI", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_NDVI2 <- out$dframe[c(1:4,10), ]
+  glm_model_NDVI2$cs <- x
+  colnames(glm_model_NDVI2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_NDVI2)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_NDVI2 <- lapply(variable.names, glm_model_NDVI2)
+
+library(plyr)
+glm_NDVI2<- ldply(glm_NDVI2, data.frame)
+glm_NDVI2
+write.csv(glm_NDVI2, "8-F3.1_leisure2.csv", row.names = F)
+
+
+
+glm_model_RH2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*RH"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("RH", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_RH2 <- out$dframe[c(1:4,10), ]
+  glm_model_RH2$cs <- x
+  colnames(glm_model_RH2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_RH2)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_RH2 <- lapply(variable.names, glm_model_RH2)
+
+library(plyr)
+glm_RH2<- ldply(glm_RH2, data.frame)
+glm_RH2
+write.csv(glm_RH2, "8-F3.2_leisure2.csv", row.names = F)
+
+
+
+
+glm_model_PRCP2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*PRCP"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("PRCP", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_PRCP2 <- out$dframe[c(1:4,10), ]
+  glm_model_PRCP2$cs <- x
+  colnames(glm_model_PRCP2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_PRCP2)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_PRCP2 <- lapply(variable.names, glm_model_PRCP2)
+
+library(plyr)
+glm_PRCP2<- ldply(glm_PRCP2, data.frame)
+glm_PRCP2
+write.csv(glm_PRCP2, "8-SF3.1_leisure2.csv", row.names = F)
+
+
+
+glm_model_AI2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*AI"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("AI", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_AI2 <- out$dframe[c(1:4,10), ]
+  glm_model_AI2$cs <- x
+  colnames(glm_model_AI2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_AI2)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_AI2 <- lapply(variable.names, glm_model_AI2)
+
+library(plyr)
+glm_AI2<- ldply(glm_AI2, data.frame)
+glm_AI2
+write.csv(glm_AI2, "8-SF3.2_leisure2.csv", row.names = F)
+
+
+
+
+glm_model_VPD2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*VPD"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("VPD", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_VPD2 <- out$dframe[c(1:4,10), ]
+  glm_model_VPD2$cs <- x
+  colnames(glm_model_VPD2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_VPD2)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_VPD2 <- lapply(variable.names, glm_model_VPD2)
+
+library(plyr)
+glm_VPD2<- ldply(glm_VPD2, data.frame)
+glm_VPD2
+write.csv(glm_VPD2, "8-SF5.1_leisure2.csv", row.names = F)
+
+
+
+glm_model_SH2<- 
+function(x){
+  FML<-as.formula(paste0("disease~",x, "*SH"))
+  dat.glm01<-glm(FML,data=data_leisure2)
+  out<- interactionR(dat.glm01,
+                   exposure_names =c("SH", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+
+  glm_model_SH2 <- out$dframe[c(1:4,10), ]
+  glm_model_SH2$cs <- x
+  colnames(glm_model_SH2) <- c('Measures',	'OR',	'lower',	'upper',	'p',	'cs')
+
+  return(glm_model_SH2)
+}  
+
+
+variable.names<- colnames(data_leisure2)[c(24:35)]
+variable.names 
+
+glm_SH2 <- lapply(variable.names, glm_model_SH2)
+
+library(plyr)
+glm_SH2<- ldply(glm_SH2, data.frame)
+glm_SH2
+write.csv(glm_SH2, "8-SF5.2_leisure2.csv", row.names = F)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r try}
+library(epiR) 
+dat.glm01 <- glm(disease ~ NDVI*cs2.5_2d, data = data_lag1)
+
+HR <- exp(coef(dat.glm01))[4]
+CI <- exp(confint(dat.glm01))[4,]
+P <- summary(dat.glm01)$coef[4,][4]
+
+
+try <- epi.interaction(model = dat.glm01, param = "product", 
+                coef = c(2,3,4), #type = "reri", 
+                conf.level = 0.95)
+View(try)
+
+alldata <- data_lag1 |> 
+  mutate(NDVI = ifelse(NDVI > median(NDVI), 1, 0),
+         cs2.5_2d = ifelse(cs2.5_2d > 0, 1, 0))
+
+dat.glm01 <- glm(disease ~ NDVI + cs2.5_2d + NDVI:cs2.5_2d, data = alldata)
+summary(dat.glm01) 
+
+
+try <- epi.interaction(model = dat.glm01, param = "product", 
+                coef = c(2,3,4), #type = "reri", 
+                conf.level = 0.95)
+View(try)
+
+
+dat.glm01<-glm(disease~cs2.5_2d*SH,data=data_leisure2)
+out<- interactionR(dat.glm01,
+                   exposure_names =c("SH", x),
+                   ci.type ="mover", #  mover,delta
+                   ci.level = 0.95,em = F, recode = F)
+interactionR_table(out)
+```
+
+
+
+

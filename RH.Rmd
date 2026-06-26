@@ -1,0 +1,108 @@
+
+
+
+
+```{r}
+
+library(readxl)
+library(tidyverse)
+
+data <- read_xlsx("RH.xlsx", sheet = 1)
+
+data <- data[,-1]
+
+didian <- read_xlsx("地点_总.xlsx") |> 
+  select('FID','NAME')
+
+
+data2 <- inner_join(data,didian,by = 'NAME')
+
+
+RH <- pivot_longer(data2,
+                     cols = -c('NAME','FID'),       # 除year外均转换
+                     names_to = "year",
+                     values_to = "RH")
+
+RH <- RH |> 
+  select('FID','NAME','year','RH') |> 
+  rename(station = NAME)
+
+writexl::write_xlsx(RH, "1-RH.xlsx")
+
+```
+
+
+
+```{r}
+
+library(readxl)
+library(tidyverse)
+
+data <- read_xlsx("VPD.xlsx", sheet = 1)
+
+data <- data[,-1]
+
+didian <- read_xlsx("NDVI数据/地点_总.xlsx") |> 
+  select('FID','NAME')
+
+
+data2 <- inner_join(data,didian,by = 'NAME')
+
+
+VPD <- pivot_longer(data2,
+                     cols = -c('NAME','FID'),       # 除year外均转换
+                     names_to = "year",
+                     values_to = "VPD")
+
+VPD <- VPD |> 
+  select('FID','NAME','year','VPD') |> 
+  rename(station = NAME)
+
+writexl::write_xlsx(VPD, "1-VPD.xlsx")
+
+```
+
+
+
+```{r}
+
+library(readxl)
+library(tidyverse)
+
+data <- read_xlsx("SH.xlsx", sheet = 1)
+
+data <- data[,-1]
+
+didian <- read_xlsx("NDVI数据/地点_总.xlsx") |> 
+  select('FID','NAME')
+
+
+data2 <- inner_join(data,didian,by = 'NAME')
+
+
+SH <- pivot_longer(data2,
+                     cols = -c('NAME','FID'),       # 除year外均转换
+                     names_to = "year",
+                     values_to = "SH")
+
+SH <- SH |> 
+  select('FID','NAME','year','SH') |> 
+  rename(station = NAME)
+
+writexl::write_xlsx(SH, "1-SH.xlsx")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
